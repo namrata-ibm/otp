@@ -218,7 +218,7 @@ jobs:
           name: ios_framework_${{ env.TARGET_ARCH }}
           path: otp/liberlang.xcframework
           
-build-s390x:
+  build-s390x:
     name: Build Erlang/OTP (s390x)
     runs-on: macos-12
     needs: pack
