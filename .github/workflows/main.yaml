@@ -217,8 +217,49 @@ jobs:
         with:
           name: ios_framework_${{ env.TARGET_ARCH }}
           path: otp/liberlang.xcframework
+          
+build-s390x:
+    name: Build Erlang/OTP (s390x)
+    runs-on: macos-12
+    needs: pack
+    steps:
+      - uses: actions/checkout@v3
 
-  build-windows:
+      - name: Download source archive
+        uses: actions/download-artifact@v3
+        with:
+          name: otp_prebuilt
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl autoconf fop flex gawk gcc g++ gzip libncurses-dev libssl-dev \
+          libxml2-utils make tar unixodbc-dev wget xsltproc pkg-config openjdk-11-jdk
+
+      - name: Compile Erlang
+        run: |
+          tar -xzf ./otp_src.tar.gz
+          cd otp_src_25.2
+          ./configure --prefix=/usr
+          make
+          sudo make install
+          tar -czf otp_$(cat OTP_VERSION)_s390x.tar.gz -C release .
+
+      - name: Test Erlang
+        run: |
+          cd otp/release
+          ./Install -sasl $PWD
+          ./bin/erl -noshell -eval 'io:format("~s", [erlang:system_info(system_version)]), halt().'
+          ./bin/erl -noshell -eval 'ok = crypto:start(), io:format("crypto ok~n"), halt().'
+          ./bin/erl -noshell -eval '{wx_ref,_,_,_} = wx:new(), io:format("wx ok~n"), halt().'
+
+      - name: Upload tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: otp_prebuilt_s390x
+          path: otp/otp_*_s390x.tar.gz
+          
+build-windows:
     defaults:
       run:
         shell: wsl-bash {0}
