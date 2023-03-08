@@ -159,8 +159,8 @@ jobs:
             apt-get install -y --no-install-recommends curl autoconf fop flex gawk gcc g++ gzip libncurses-dev libssl-dev \
             libxml2-utils make tar unixodbc-dev wget xsltproc pkg-config 
             mkdir -p /opt/java
-            wget https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jdk_s390x_linux_11.0.17_8_openj9-0.35.0.tar.gz
-            tar -C /opt/java -xzf ibm-semeru-open-jdk_s390x_linux_11.0.17_8_openj9-0.35.0.tar.gz --strip 1
+            wget https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.17%2B8/OpenJDK11U-jdk_s390x_linux_hotspot_11.0.17_8.tar.gz
+            tar -C /opt/java -xzf OpenJDK11U-jdk_s390x_linux_hotspot_11.0.17_8.tar.gz --strip 1
             export JAVA_HOME=/opt/java
             export PATH=$JAVA_HOME/bin:$PATH
             java -version
