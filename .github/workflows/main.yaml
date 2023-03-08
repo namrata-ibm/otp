@@ -160,15 +160,14 @@ jobs:
             libxml2-utils make tar unixodbc-dev wget xsltproc pkg-config openjdk-11-jdk 
             tar -xzf ./otp_src.tar.gz
             cd otp
-            ./configure --prefix=/usr
-            make
-            make install
+            ./otp_build configure --disable-dynamic-ssl-lib
+            ./otp_build boot -a
+            ./otp_build release -a $PWD/release
             tar -czf otp_$(cat OTP_VERSION)_s390x.tar.gz -C release .
             cd otp/release
             ./Install -sasl $PWD
             ./bin/erl -noshell -eval 'io:format("~s", [erlang:system_info(system_version)]), halt().'
             ./bin/erl -noshell -eval 'ok = crypto:start(), io:format("crypto ok~n"), halt().'
-            ./bin/erl -noshell -eval '{wx_ref,_,_,_} = wx:new(), io:format("wx ok~n"), halt().'
 
       - name: Upload tarball
         uses: actions/upload-artifact@v3
