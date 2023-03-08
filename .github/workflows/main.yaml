@@ -157,20 +157,14 @@ jobs:
           run: | 
             apt-get update && \
             apt-get install -y --no-install-recommends curl autoconf fop flex gawk gcc g++ gzip libncurses-dev libssl-dev \
-            libxml2-utils make tar unixodbc-dev wget xsltproc pkg-config openjdk-11-jdk 
+            libxml2-utils make tar unixodbc-dev wget xsltproc pkg-config 
+            wget https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jdk_s390x_linux_11.0.17_8_openj9-0.35.0.tar.gz
+            tar -C /opt/java -xzf ibm-semeru-open-jdk_s390x_linux_11.0.17_8_openj9-0.35.0.tar.gz --strip 1
+            export JAVA_HOME=/opt/java
+            export PATH=$JAVA_HOME/bin:$PATH
+            java -version
             tar -xzf ./otp_src.tar.gz
             cd otp
-            ./otp_build configure --disable-dynamic-ssl-lib
-            ./otp_build boot -a
-            ./otp_build release -a $PWD/release
-            tar -czf otp_$(cat OTP_VERSION)_s390x.tar.gz -C release .
-            cd otp/release
-            ./Install -sasl $PWD
+            ./configure && make && make install
             ./bin/erl -noshell -eval 'io:format("~s", [erlang:system_info(system_version)]), halt().'
             ./bin/erl -noshell -eval 'ok = crypto:start(), io:format("crypto ok~n"), halt().'
-
-      - name: Upload tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: otp_prebuilt_s390x
-          path: otp/otp_*_s390x.tar.gz
